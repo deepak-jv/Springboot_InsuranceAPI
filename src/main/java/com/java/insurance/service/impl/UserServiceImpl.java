@@ -4,6 +4,7 @@ import java.util.List;import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,8 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private RoleRepository roleRepository;
 	
+	private Logger logger;
+	
 
 	public UserServiceImpl(UserRepository userRepository, ModelMapper mapper) {
 		this.userRepository = userRepository;
@@ -53,6 +56,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto create_user(UserDto userDto) {
+		logger.info("creating user with user request : "+userDto);
+		
 		User user = mapper.map(userDto, User.class);
 		User savedUser = userRepository.save(user);
 		return mapper.map(savedUser, UserDto.class);
@@ -60,6 +65,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto updateUser(UserDto userDto, Integer id) {
+		
+		logger.info("updating the user with user id :"+id);
+
 		User user = userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("User","id",id));
 //		user.builder().name(userDto.getName()).email(userDto.getEmail())
 //					.password(userDto.getPassword()).age(userDto.getAge()).address(userDto.getAddress()).build();
@@ -78,7 +86,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto getUserById(Integer id) {
-		
+		logger.info("getting the user with user id :"+id);
+
 		User user = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User","Id",id));
 		return mapper.map(user, UserDto.class);
 		
@@ -87,6 +96,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<UserDto> getAllUsers() {
+		
+		logger.info("getting all the users");
+			
 		List<User>users = userRepository.findAll();
 		List<UserDto> userDtos = users.stream().map(user->mapper.map(user,UserDto.class)).collect(Collectors.toList());
 		return userDtos;
@@ -94,6 +106,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteUser(Integer id) {
+		logger.info("deleting the user with user id :"+id);
 
 		User user = userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("User", "id", id));
 		userRepository.delete(user);
