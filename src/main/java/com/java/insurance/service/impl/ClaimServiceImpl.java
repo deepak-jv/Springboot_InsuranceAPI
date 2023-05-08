@@ -18,6 +18,8 @@ import com.java.insurance.repository.PolicyRepository;
 import com.java.insurance.repository.UserRepository;
 import com.java.insurance.service.ClaimService;
 
+import ch.qos.logback.classic.Logger;
+
 @Service
 public class ClaimServiceImpl implements ClaimService {
 
@@ -33,10 +35,13 @@ public class ClaimServiceImpl implements ClaimService {
 	@Autowired
 	private ModelMapper modelMapper;
 	
+	private Logger logger;
+	
 	
 	@Override
 	public ClaimDto createClaim(ClaimDto claimDto, Integer userId, Integer pId) {
 		
+		logger.info("creating the Claims for the customer with request body :"+claimDto+", user Id :"+userId+" and policy id :"+pId);
 		User user = userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User","id",userId));
 		Policy policy = policyRepository.findById(pId).orElseThrow(()->new ResourceNotFoundException("Policy","id",pId));
 	
@@ -52,6 +57,8 @@ public class ClaimServiceImpl implements ClaimService {
 	@Override
 	public ClaimDto updateClaim(ClaimDto claimDto, Integer cId) {
 		
+		logger.info("updating the Claims for the customer with request body :"+claimDto+" and user Id :"+cId);
+
 		Claim updateClaim = claimRespository.findById(cId).orElseThrow(()-> new ResourceNotFoundException("Claim","Id",cId));
 		
 		updateClaim.setDescription(claimDto.getDescription());
@@ -65,6 +72,7 @@ public class ClaimServiceImpl implements ClaimService {
 
 	@Override
 	public void deleteClaim(Integer cId) {
+		logger.info("deleting the Claims for the customer with claim Id :"+cId);
 
 		Claim claim = claimRespository.findById(cId).orElseThrow(()-> new ResourceNotFoundException("Claim","Id",cId));
 		claimRespository.delete(claim);		
@@ -72,6 +80,7 @@ public class ClaimServiceImpl implements ClaimService {
 
 	@Override
 	public ClaimDto getClaimById(Integer cId) {
+		logger.info("getting the Claims for the customer with customer Id :"+cId);
 
 		Claim claim = claimRespository.findById(cId).orElseThrow(()-> new ResourceNotFoundException("Claim","Id",cId));
 		return modelMapper.map(claim, ClaimDto.class);
@@ -79,6 +88,7 @@ public class ClaimServiceImpl implements ClaimService {
 
 	@Override
 	public List<ClaimDto> getAllClaims() {
+		logger.info("getting list of the Claims");
 
 		List<Claim> claims = claimRespository.findAll();
 		List<ClaimDto> allClaims = claims.stream().map(claim -> modelMapper.map(claim, ClaimDto.class)).collect(Collectors.toList());
