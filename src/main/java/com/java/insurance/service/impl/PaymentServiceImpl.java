@@ -81,4 +81,12 @@ public class PaymentServiceImpl implements PaymentService {
 		return paymentsDto;
 	}
 
+
+
+	@Override
+	public PaymentDto getPaymentsById(Integer userId, Integer pId, Integer payId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
